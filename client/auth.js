@@ -20,29 +20,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             authorize: async (credentials) => {
                 try {
                     if (!credentials?.email || !credentials?.password) {
-                        console.log("Authorize: Missing credentials");
                         return null;
                     }
 
-                    console.log("Authorize: Fetching", `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`);
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
+                    console.log(`[AUTH] Attempting login to: ${apiUrl}/api/auth/login`);
+
+                    const res = await fetch(`${apiUrl}/api/auth/login`, {
                         method: "POST",
                         body: JSON.stringify(credentials),
                         headers: { "Content-Type": "application/json" },
                     });
 
-                    console.log("Authorize: Response status", res.status);
-                    const user = await res.json();
-                    console.log("Authorize: User data", user);
-
-                    if (res.ok && user) {
-                        return user;
+                    if (!res.ok) {
+                        const errorData = await res.json().catch(() => ({}));
+                        console.error(`[AUTH] Login failed with status ${res.status}:`, errorData.message);
+                        return null;
                     }
-                    console.log("Authorize: Failed with status or no user");
+
+                    const user = await res.json();
+
+                    if (user) {
+                        // Ensure NextAuth sees an 'id' string
+                        return {
+                            ...user,
+                            id: user._id || user.id,
+                        };
+                    }
+
                     return null;
                 } catch (e) {
-                    console.error("Authorize: Error", e);
-                    return null
+                    console.error("[AUTH] Unexpected error during authorize:", e);
+                    return null;
                 }
             },
         }),
