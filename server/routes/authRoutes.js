@@ -52,9 +52,45 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// @desc    Authenticate a user
-// @route   POST /api/auth/login
+// @desc    OAuth Login/Sync
+// @route   POST /api/auth/oauth-login
 // @access  Public
+router.post('/oauth-login', async (req, res) => {
+    try {
+        const { email, name } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Create user if not exists (NextAuth might have created it, but let's be safe)
+            user = await User.create({
+                name: name || 'User',
+                email: email,
+                role: 'user'
+            });
+        } else if (!user.role) {
+            // Fix missing role (like in the user's screenshot)
+            user.role = 'user';
+            await user.save();
+        }
+
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            token: generateToken(user._id),
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;

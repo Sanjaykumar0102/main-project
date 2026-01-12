@@ -65,6 +65,32 @@ export default {
         strategy: "jwt",
     },
     callbacks: {
+        async signIn({ user, account, profile }) {
+            if (account?.provider === "google" || account?.provider === "github") {
+                try {
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://main-project-97o4.onrender.com";
+                    console.log(`[AUTH] Syncing OAuth user: ${user.email}`);
+                    const res = await fetch(`${apiUrl}/api/auth/oauth-login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: user.email, name: user.name })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        user.token = data.token;
+                        user.role = data.role;
+                        user.id = data._id; // Sync ID with backend
+                        return true;
+                    }
+                    console.error("[AUTH] OAuth Sync Failed:", res.status);
+                    return false;
+                } catch (e) {
+                    console.error("[AUTH] OAuth Sync Error:", e);
+                    return false;
+                }
+            }
+            return true;
+        },
         async jwt({ token, user, account }) {
             if (user) {
                 token.id = user.id || user._id;
