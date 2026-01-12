@@ -31,9 +31,15 @@
   border-radius: 10px;
   max-width: 300px;
   transition: transform 0.2s;
+  cursor: pointer;
 }
 
-.card:hover {
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardLink:hover .card {
   transform: translateY(-5px);
   border-color: #0070f3;
 }
