@@ -31,33 +31,30 @@ const protect = async (req, res, next) => {
         try {
             // Get token from header
             token = req.headers.authorization.split(' ')[1];
-
-            // For this project, since NextAuth is handling the main session, 
-            // we might not have a backend-signed JWT unless we issue one.
-            // OPTION: During "backend login" (which NextAuth Credentials provider calls), we can return a JWT.
-            // Let's assume we modified authRoutes to return a JWT.
-
-            // Decrypt (assuming we use same secret or specific backend secret)
-            // For now, let's keep it simple: if we haven't set up full JWT issuance, we will do so now.
-
-            // Verification placeholder - need to ensure we issue tokens first.
-            // implementation_plan.md says "protect: Verifies JWT".
+            console.log(`[MIDDLEWARE] Token received: ${token.substring(0, 10)}...`);
 
             // VERIFY TOKEN
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+            console.log(`[MIDDLEWARE] Token verified for user ID: ${decoded.id}`);
 
             // Get user from the token
             req.user = await User.findById(decoded.id).select('-password');
 
+            if (!req.user) {
+                console.log(`[MIDDLEWARE] User not found in DB for ID: ${decoded.id}`);
+                return res.status(401).json({ message: 'User no longer exists' });
+            }
+
             next();
         } catch (error) {
-            console.log(error);
-            res.status(401).json({ message: 'Not authorized' });
+            console.error(`[MIDDLEWARE] JWT verification failed: ${error.message}`);
+            res.status(401).json({ message: 'Not authorized, token failed' });
         }
-    }
-
-    if (!token) {
-        res.status(401).json({ message: 'Not authorized, no token' });
+    } else {
+        if (!token) {
+            console.log(`[MIDDLEWARE] No Authorization header or malformed Bearer token`);
+            return res.status(401).json({ message: 'Not authorized, no token' });
+        }
     }
 };
 

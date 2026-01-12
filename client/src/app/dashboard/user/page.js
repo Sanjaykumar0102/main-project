@@ -66,6 +66,7 @@ export default function UserDashboard() {
     const handleCreateTask = async (e) => {
         e.preventDefault();
         try {
+            console.log(`[CLIENT] Creating task with token: ${session?.user?.token?.substring(0, 10)}...`);
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
                 method: 'POST',
                 headers: {
