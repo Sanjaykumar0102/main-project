@@ -43,6 +43,7 @@ export default function UserDashboard() {
 
     useEffect(() => {
         if (status === 'loading') return;
+        console.log(`[CLIENT] Session Status: ${status}, User: ${session?.user?.email}, Has Token: ${!!session?.user?.token}`);
         if (status === 'unauthenticated') router.push('/login');
         else if (session?.user?.role === 'admin') router.push('/dashboard/admin');
         else {
