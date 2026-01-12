@@ -22,13 +22,14 @@ router.get('/', protect, async (req, res) => {
 // @access  Private
 router.post('/', protect, async (req, res) => {
     try {
-        const { title, description, priority, deadline } = req.body;
+        const { title, description, priority, deadline, timeRequired } = req.body;
 
         const task = await Task.create({
             title,
             description,
             priority,
             deadline,
+            timeRequired: timeRequired || 30,
             assignedTo: req.user.id,
             assignedBy: req.user.id, // Self-assigned
             status: 'pending'
