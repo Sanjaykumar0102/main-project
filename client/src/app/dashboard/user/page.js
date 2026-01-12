@@ -80,8 +80,14 @@ export default function UserDashboard() {
                 const createdTask = await res.json();
                 setTasks([createdTask, ...tasks]);
                 setNewTask({ title: '', description: '', priority: 'medium', deadline: '', timeRequired: 30, status: 'yet-to-start' });
+            } else {
+                const errorData = await res.json().catch(() => ({}));
+                alert(`Failed to create task: ${errorData.message || 'Server Error'}`);
             }
-        } catch (err) { console.error(err); }
+        } catch (err) {
+            console.error(err);
+            alert(`Task creation failed: ${err.message}`);
+        }
     };
 
     const openEditModal = (task) => {
