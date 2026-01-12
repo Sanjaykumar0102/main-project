@@ -66,33 +66,6 @@ export default {
     },
     callbacks: {
         async signIn({ user, account, profile }) {
-            if (account?.provider === "google" || account?.provider === "github") {
-                try {
-                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://main-project-97o4.onrender.com";
-                    console.log(`[AUTH] Handshaking with backend for: ${user.email}`);
-
-                    const res = await fetch(`${apiUrl}/api/auth/oauth-login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: user.email, name: user.name })
-                    });
-
-                    if (res.ok) {
-                        const data = await res.json();
-                        console.log(`[AUTH] Backend Sync Successful: Role=${data.role}`);
-
-                        user.token = data.token;
-                        user.role = data.role || 'user';
-                        user.id = data._id;
-                        return true;
-                    }
-                    console.error(`[AUTH] Backend Sync Refused: ${res.status}`);
-                    return false;
-                } catch (e) {
-                    console.error("[AUTH] Fatal Sync Error:", e.message);
-                    return false;
-                }
-            }
             return true;
         },
         async jwt({ token, user, account }) {
@@ -100,7 +73,32 @@ export default {
                 token.id = user.id || user._id;
                 token.role = user.role || 'user';
                 token.accessToken = user.token;
-                console.log(`[AUTH] JWT Callback: User ${token.id} (${token.role})`);
+
+                if (account && (account.provider === "google" || account.provider === "github")) {
+                    try {
+                        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://main-project-97o4.onrender.com";
+                        console.log(`[AUTH] JWT Callback -> Syncing OAuth user: ${user.email}`);
+
+                        const res = await fetch(`${apiUrl}/api/auth/oauth-login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: user.email, name: user.name })
+                        });
+
+                        if (res.ok) {
+                            const data = await res.json();
+                            console.log(`[AUTH] JWT Sync Success: Role=${data.role}`);
+                            token.accessToken = data.token;
+                            token.role = data.role;
+                            token.id = data._id;
+                        } else {
+                            console.error(`[AUTH] JWT Sync Refused: ${res.status}`);
+                        }
+                    } catch (e) {
+                        console.error("[AUTH] JWT Sync Fatal Error:", e.message);
+                    }
+                }
+                console.log(`[AUTH] Token ready for User ${token.id}. Has Token: ${!!token.accessToken}`);
             }
             return token;
         },
@@ -109,6 +107,7 @@ export default {
                 session.user.id = token.id;
                 session.user.role = token.role || 'user';
                 session.user.token = token.accessToken;
+                console.log(`[AUTH] Session ready for ${session.user.email}. Role: ${session.user.role}, Has Token: ${!!session.user.token}`);
             }
             return session;
         },
