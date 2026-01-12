@@ -34,16 +34,23 @@ router.post('/', protect, async (req, res) => {
             status: 'pending'
         });
 
+        console.log(`[TASKS] User ${req.user.id} created task: ${task.title}`);
+
         // Event Trigger: Inngest (Delayed Reminder at Deadline)
-        await inngest.send({
-            name: "task.created",
-            data: {
-                taskId: task._id,
-                title: task.title,
-                assignedTo: task.assignedTo,
-                deadline: task.deadline // Pass deadline
-            }
-        });
+        // Defensive: Don't let Inngest failures crash the whole request
+        try {
+            await inngest.send({
+                name: "task.created",
+                data: {
+                    taskId: task._id,
+                    title: task.title,
+                    assignedTo: task.assignedTo,
+                    deadline: task.deadline
+                }
+            });
+        } catch (inngestErr) {
+            console.error(`[TASKS] Inngest Error (task.created): ${inngestErr.message}`);
+        }
 
         // We DON'T emit 'task.assigned' for self-created tasks to avoid spamming self with emails?
         // User request: "Add tasks for themselves".
@@ -83,15 +90,19 @@ router.put('/:id', protect, async (req, res) => {
 
             // If status changed from yet-to-start to pending, trigger smart reminder
             if (oldStatus === 'yet-to-start' && status === 'pending') {
-                await inngest.send({
-                    name: "task.status.pending",
-                    data: {
-                        taskId: task._id,
-                        title: task.title,
-                        deadline: task.deadline,
-                        timeRequired: task.timeRequired
-                    }
-                });
+                try {
+                    await inngest.send({
+                        name: "task.status.pending",
+                        data: {
+                            taskId: task._id,
+                            title: task.title,
+                            deadline: task.deadline,
+                            timeRequired: task.timeRequired
+                        }
+                    });
+                } catch (inngestErr) {
+                    console.error(`[TASKS] Inngest Error (task.status.pending): ${inngestErr.message}`);
+                }
             }
         }
 
