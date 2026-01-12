@@ -69,23 +69,27 @@ export default {
             if (account?.provider === "google" || account?.provider === "github") {
                 try {
                     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://main-project-97o4.onrender.com";
-                    console.log(`[AUTH] Syncing OAuth user: ${user.email}`);
+                    console.log(`[AUTH] Handshaking with backend for: ${user.email}`);
+
                     const res = await fetch(`${apiUrl}/api/auth/oauth-login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: user.email, name: user.name })
                     });
+
                     if (res.ok) {
                         const data = await res.json();
+                        console.log(`[AUTH] Backend Sync Successful: Role=${data.role}`);
+
                         user.token = data.token;
-                        user.role = data.role;
-                        user.id = data._id; // Sync ID with backend
+                        user.role = data.role || 'user';
+                        user.id = data._id;
                         return true;
                     }
-                    console.error("[AUTH] OAuth Sync Failed:", res.status);
+                    console.error(`[AUTH] Backend Sync Refused: ${res.status}`);
                     return false;
                 } catch (e) {
-                    console.error("[AUTH] OAuth Sync Error:", e);
+                    console.error("[AUTH] Fatal Sync Error:", e.message);
                     return false;
                 }
             }

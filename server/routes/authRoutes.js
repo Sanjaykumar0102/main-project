@@ -66,17 +66,24 @@ router.post('/oauth-login', async (req, res) => {
         let user = await User.findOne({ email });
 
         if (!user) {
-            // Create user if not exists (NextAuth might have created it, but let's be safe)
+            // Create user if not exists
+            console.log(`[AUTH] Creating new OAuth user in DB: ${email}`);
             user = await User.create({
                 name: name || 'User',
                 email: email,
                 role: 'user'
             });
-        } else if (!user.role) {
-            // Fix missing role (like in the user's screenshot)
-            user.role = 'user';
+        } else {
+            console.log(`[AUTH] Syncing existing OAuth user: ${email} (Current Role: ${user.role})`);
+            // FORCE update if role is missing in the actual DB document
+            // Mongoose might show a default 'user' even if it's missing in DB
+            user.role = user.role || 'user';
+            user.markModified('role'); // Force Mongoose to see this change
             await user.save();
         }
+
+        const token = generateToken(user._id);
+        console.log(`[AUTH] Generated backend token for ${email}`);
 
         res.json({
             _id: user._id,
