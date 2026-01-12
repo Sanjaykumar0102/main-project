@@ -74,7 +74,11 @@ export default function UserDashboard() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.user.token}`
                 },
-                body: JSON.stringify(newTask)
+                body: JSON.stringify({
+                    ...newTask,
+                    // Convert local datetime-local string to UTC ISO string
+                    deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : ''
+                })
             });
             if (res.ok) {
                 const createdTask = await res.json();
@@ -140,7 +144,11 @@ export default function UserDashboard() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.user.token}`
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify({
+                    ...body,
+                    // Force deadline to UTC ISO string to prevent timezone offsets
+                    deadline: body.deadline ? new Date(body.deadline).toISOString() : undefined
+                })
             });
 
             if (res.ok) {
