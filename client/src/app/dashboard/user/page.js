@@ -31,6 +31,7 @@ export default function UserDashboard() {
 
     const [selectedDate, setSelectedDate] = useState('today');
     const [viewMode, setViewMode] = useState('pending');
+    const [sourceFilter, setSourceFilter] = useState('all'); // 'all', 'my', 'admin'
 
     useEffect(() => {
         if (!socket) return;
@@ -196,8 +197,15 @@ export default function UserDashboard() {
 
     // Filter tasks
     const filteredTasks = tasks.filter(t => {
-        if (viewMode === 'pending') return t.status !== 'completed';
-        if (viewMode === 'completed') return t.status === 'completed';
+        // 1. Status Filter
+        if (viewMode === 'pending' && t.status === 'completed') return false;
+        if (viewMode === 'completed' && t.status !== 'completed') return false;
+
+        // 2. Source Filter
+        const isMyTask = t.assignedBy === session.user.id;
+        if (sourceFilter === 'my' && !isMyTask) return false;
+        if (sourceFilter === 'admin' && isMyTask) return false;
+
         return true;
     });
 
@@ -209,6 +217,7 @@ export default function UserDashboard() {
 
     const groupedTasks = groupTasksByDate(tasksToShow);
     const allPendingCount = tasks.filter(t => t.status !== 'completed').length;
+    const adminTasksPending = tasks.filter(t => t.assignedBy !== session.user.id && t.status !== 'completed').length;
 
     if (status === 'loading' || !session) return <p>Loading...</p>;
 
@@ -291,25 +300,47 @@ export default function UserDashboard() {
                         </div>
                     </div>
 
-                    {/* View Mode Tabs */}
+                    {/* Source Filter Tabs */}
                     <div className={styles.tabs}>
                         <button
-                            className={viewMode === 'pending' ? styles.tabActive : styles.tab}
+                            className={sourceFilter === 'all' ? styles.tabActive : styles.tab}
+                            onClick={() => setSourceFilter('all')}
+                        >
+                            All Tasks
+                        </button>
+                        <button
+                            className={sourceFilter === 'my' ? styles.tabActive : styles.tab}
+                            onClick={() => {
+                                setSourceFilter('my');
+                                setSelectedDate('today');
+                            }}
+                        >
+                            My Tasks
+                        </button>
+                        <button
+                            className={sourceFilter === 'admin' ? styles.tabActive : styles.tab}
+                            onClick={() => {
+                                setSourceFilter('admin');
+                                setSelectedDate('all'); // Clear date filter for admin tasks so user doesn't miss them
+                            }}
+                        >
+                            Admin Tasks {adminTasksPending > 0 && <span className={styles.countBadge}>{adminTasksPending}</span>}
+                        </button>
+                    </div>
+
+                    {/* View Mode Sub-Tabs */}
+                    <div className={styles.subTabs}>
+                        <button
+                            className={viewMode === 'pending' ? styles.subTabActive : styles.subTab}
                             onClick={() => setViewMode('pending')}
                         >
                             Pending
                         </button>
                         <button
-                            className={viewMode === 'completed' ? styles.tabActive : styles.tab}
+                            className={viewMode === 'completed' ? styles.subTabActive : styles.subTab}
                             onClick={() => setViewMode('completed')}
                         >
                             Completed
-                        </button>
-                        <button
-                            className={viewMode === 'all' ? styles.tabActive : styles.tab}
-                            onClick={() => setViewMode('all')}
-                        >
-                            All
                         </button>
                     </div>
 
