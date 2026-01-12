@@ -8,6 +8,8 @@ import clientPromise from "./lib/mongodb"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
+    debug: true, // Enable for production troubleshooting
+    trustHost: true,
     providers: [
         Google,
         GitHub,
@@ -23,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         return null;
                     }
 
-                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://main-project-97o4.onrender.com";
                     console.log(`[AUTH] Attempting login to: ${apiUrl}/api/auth/login`);
 
                     const res = await fetch(`${apiUrl}/api/auth/login`, {
