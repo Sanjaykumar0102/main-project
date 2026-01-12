@@ -8,7 +8,8 @@ import clientPromise from "./lib/mongodb"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
-    debug: true, // Enable for production troubleshooting
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+    debug: true,
     trustHost: true,
     providers: [
         Google,
