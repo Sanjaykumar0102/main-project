@@ -25,7 +25,7 @@ router.get('/users', protect, admin, async (req, res) => {
 // @access  Private/Admin
 router.post('/tasks', protect, admin, async (req, res) => {
     try {
-        const { title, description, assignedTo, priority, deadline } = req.body;
+        const { title, description, assignedTo, priority, deadline, timeRequired } = req.body;
 
         // Check if user exists
         const user = await User.findById(assignedTo);
@@ -38,6 +38,7 @@ router.post('/tasks', protect, admin, async (req, res) => {
             description,
             priority,
             deadline,
+            timeRequired: timeRequired || 30,
             assignedTo,
             assignedBy: req.user._id, // From the admin token
             status: 'pending'
@@ -47,22 +48,24 @@ router.post('/tasks', protect, admin, async (req, res) => {
         eventEmitter.emit('task.assigned', { task, assignedToId: assignedTo });
 
         // Event Trigger: Inngest (Delayed Reminder)
-        await inngest.send({
-            name: "task.created",
-            data: {
-                taskId: task._id,
-                title: task.title,
-                assignedTo: assignedTo,
-                deadline: task.deadline // Pass Deadline
-            }
-        });
-
+        try {
+            await inngest.send({
+                name: "task.created",
+                data: {
+                    taskId: task._id,
+                    title: task.title,
+                    assignedTo: assignedTo,
+                    deadline: task.deadline // Pass Deadline
+                }
+            });
+        } catch (inngestErr) {
+            console.error(`[ADMIN] Inngest Error (task.created): ${inngestErr.message}`);
+        }
 
         res.status(201).json(task);
-
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error(`[ADMIN] Task Creation Error: ${error.message}`);
+        res.status(500).json({ message: `Server Error: ${error.message}` });
     }
 });
 
