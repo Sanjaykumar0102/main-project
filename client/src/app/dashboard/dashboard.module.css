@@ -1,0 +1,509 @@
+/* Existing Styles */
+.container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    color: #333;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+    color: white;
+}
+
+.profile {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.logoutBtn {
+    padding: 0.5rem 1rem;
+    background: #FF4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+    color: #0070f3;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: left;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #333;
+    background: #fff;
+}
+
+.formGroup textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.btn {
+    padding: 0.75rem;
+    background: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: #0051a2;
+}
+
+.alert {
+    padding: 0.75rem;
+    background: #d4edda;
+    color: #155724;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid #c3e6cb;
+}
+
+/* Admin Tabs */
+.adminTabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.adminTab,
+.adminTabActive {
+    padding: 1rem 1.5rem;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    flex: 1;
+    text-align: center;
+}
+
+.adminTabActive {
+    background: #0070f3;
+    color: white;
+    border-color: #0070f3;
+}
+
+.adminTab:hover {
+    border-color: #0070f3;
+    background: #f0f7ff;
+}
+
+/* User Grid */
+.userGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.userCard {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #0070f3;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.userInfo strong {
+    font-size: 1.1rem;
+    color: #222;
+}
+
+.userEmail {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.userRole {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    align-self: flex-start;
+    text-transform: uppercase;
+}
+
+/* Task List Styles */
+.taskHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.statBadge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.tab,
+.tabActive {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.tabActive {
+    color: #0070f3;
+    border-bottom-color: #0070f3;
+}
+
+.tab:hover {
+    background: #f8f9fa;
+}
+
+.dateFilter {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.dateBtn,
+.dateActive {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.dateActive {
+    background: #0070f3;
+    color: white;
+    border-color: #0070f3;
+}
+
+.dateBtn:hover {
+    border-color: #0070f3;
+}
+
+.taskGroups {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.dateGroup {
+    margin-bottom: 2rem;
+}
+
+.dateHeader {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.taskItem {
+    border-left: 4px solid #0070f3;
+    background: #f8f9fa;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.taskContent {
+    flex: 1;
+}
+
+.taskTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.taskTitle {
+    font-size: 1.1rem;
+    color: #222;
+}
+
+.taskDesc {
+    color: #666;
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.taskMeta {
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.priority-high {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.priority-medium {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.priority-low {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.statusBadge {
+    background: #e9ecef;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+.overdueBadge {
+    background: #fff3cd;
+    color: #856404;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.extensionNote {
+    background: #fff3e0;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #e65100;
+}
+
+.editBtn {
+    padding: 0.5rem 1rem;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.editBtn:hover {
+    background: #5a6268;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+    font-size: 1.1rem;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: #333;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cancelBtn {
+    padding: 0.75rem;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.waitingBadge {
+    background: #fff3cd;
+    color: #856404;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #ffeeba;
+}
+
+.requestCard {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.requestHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.requestBody {
+    margin-bottom: 1rem;
+}
+
+.requestBody p {
+    margin: 0.25rem 0;
+}
+
+.requestFooter {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.approveBtn {
+    padding: 0.6rem 1.2rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.rejectBtn {
+    padding: 0.6rem 1.2rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.infoText {
+    color: #666;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-top: 0.5rem;
+}
