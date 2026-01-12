@@ -91,12 +91,34 @@ router.put('/tasks/:id', protect, admin, async (req, res) => {
             return res.status(404).json({ message: 'Task not found' });
         }
 
+        // Store original deadline for comparison
+        const originalDeadline = task.deadline;
+        const originalStatus = task.status;
+
         if (status) task.status = status;
         if (deadline) task.deadline = deadline;
         if (timeRequired) task.timeRequired = timeRequired;
         if (extensionReason) task.extensionReason = extensionReason;
 
         const updatedTask = await task.save();
+
+        // Trigger smart reminder if status became pending
+        if (status === 'pending') {
+            try {
+                await inngest.send({
+                    name: "task.status.pending",
+                    data: {
+                        taskId: updatedTask._id,
+                        title: updatedTask.title,
+                        deadline: updatedTask.deadline,
+                        timeRequired: updatedTask.timeRequired
+                    }
+                });
+            } catch (err) {
+                console.error(`[ADMIN] Inngest Error: ${err.message}`);
+            }
+        }
+
         res.json(updatedTask);
     } catch (error) {
         console.error(error);

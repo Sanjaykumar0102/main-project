@@ -47,7 +47,10 @@ const taskReminder = inngest.createFunction(
 // Smart Reminder: When task status changes to "pending"
 const pendingTaskReminder = inngest.createFunction(
     { id: "pending-task-reminder" },
-    { event: "task.status.pending" },
+    [
+        { event: "task.status.pending" },
+        { event: "task.created" }
+    ],
     async ({ event, step }) => {
         const task = await step.run("fetch-task-details", async () => {
             return await Task.findById(event.data.taskId);
@@ -69,7 +72,10 @@ const pendingTaskReminder = inngest.createFunction(
             return await Task.findById(event.data.taskId);
         });
 
-        if (!currentTask || currentTask.status === 'completed') return "Task completed";
+        // Only remind if the task is still in 'pending' status
+        if (!currentTask || currentTask.status !== 'pending') {
+            return `Task status is ${currentTask?.status || 'unknown'}, no reminder needed.`;
+        }
 
         await step.run("send-pending-reminder", async () => {
             const user = await User.findById(currentTask.assignedTo);

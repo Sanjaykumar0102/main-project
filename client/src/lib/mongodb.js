@@ -6,21 +6,34 @@ if (!process.env.MONGO_URI) {
 
 const uri = process.env.MONGO_URI
 const options = {
-    serverSelectionTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 10000, // Increase to 10s for slow connections
     socketTimeoutMS: 45000,
 }
 
 let client
 let clientPromise
 
-// In serverless environments (like Vercel), we need to use a global variable 
-// to prevent the MongoClient from being recreated every time.
-if (!global._mongoClientPromise) {
+if (process.env.NODE_ENV === "development") {
+    // In development mode, use a global variable so that the value
+    // is preserved across module reloads caused by HMR (Hot Module Replacement).
+    if (!global._mongoClientPromise) {
+        console.log("Connecting to MongoDB (Dev)...");
+        client = new MongoClient(uri, options)
+        global._mongoClientPromise = client.connect()
+            .then(client => {
+                console.log("MongoDB Connected (Dev)");
+                return client;
+            })
+            .catch(err => {
+                console.error("MongoDB Connection Error (Dev):", err.message);
+                throw err;
+            });
+    }
+    clientPromise = global._mongoClientPromise
+} else {
+    // In production mode, it's best to not use a global variable.
     client = new MongoClient(uri, options)
-    global._mongoClientPromise = client.connect()
+    clientPromise = client.connect()
 }
-clientPromise = global._mongoClientPromise
 
-// Export a module-scoped MongoClient promise. By doing this in a
-// separate module, the client can be shared across functions.
 export default clientPromise
