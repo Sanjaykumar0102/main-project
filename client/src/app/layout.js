@@ -1,5 +1,4 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { SessionProvider } from 'next-auth/react';
 import { SocketProvider } from '../context/SocketContext'; // Import SocketProvider
 import "./globals.css";
 import { Providers } from "./providers";
@@ -23,11 +22,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <SessionProvider>
+        <Providers>
           <SocketProvider>
             {children}
           </SocketProvider>
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   );
